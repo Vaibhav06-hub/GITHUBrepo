@@ -1,0 +1,49 @@
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    name: Default
+  steps:
+  - checkout: self
+    fetchDepth: 1
+  - task: CmdLine@2
+    displayName: check
+    inputs:
+      script: >-
+        node -v
+
+
+        npm -v
+  - task: Npm@1
+    displayName: npm install
+    inputs:
+      verbose: false
+  - task: Npm@1
+    displayName: npm build
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: run build
+      customRegistry: useFeed
+      customFeed: 7ad60eb8-6950-416c-a3f9-ad8e74b80a46
+  - task: Npm@1
+    displayName: npm publish
+    enabled: False
+    inputs:
+      command: publish
+      verbose: false
+      publishRegistry: useFeed
+      publishFeed: 7ad60eb8-6950-416c-a3f9-ad8e74b80a46
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+    inputs:
+      PathtoPublish: build
+  - task: AzureRmWebAppDeployment@4
+    displayName: 'Azure App Service Deploy: sandeepg'
+    inputs:
+      ConnectedServiceName: 99e3afad-767c-4609-b82b-d8cc4aa6ce46
+      WebAppKind: webAppLinux
+      WebAppName: sandeepg
+      Package: $(System.DefaultWorkingDirectory)/build
+      RuntimeStack: STATICSITE|1.0
+...
