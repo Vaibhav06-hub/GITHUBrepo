@@ -1,0 +1,52 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  name: Default
+  demands: maven
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+- script: terraform -version
+  displayName: 'Terraform version'
+  
+
+- task: TerraformTaskV4@4
+  displayName: 'Terra init'
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'Free Trial(baa3252d-06b9-4e1b-a961-2ebe0501976c)'
+    backendAzureRmResourceGroupName: 'ResourcesForMavenPROJ01'
+    backendAzureRmStorageAccountName: 'storagefortf0002'
+    backendAzureRmContainerName: 'backendtf'
+    backendAzureRmKey: 'terraform.tfstate'
+
+
+- task: TerraformTaskV4@4
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: 'Free Trial(baa3252d-06b9-4e1b-a961-2ebe0501976c)'
+
+- task: TerraformTaskV4@4
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    environmentServiceNameAzureRM: 'Free Trial(baa3252d-06b9-4e1b-a961-2ebe0501976c)'
+
+
+
+- task: TerraformTaskV4@4
+  displayName: 'Terra Destroy'
+  inputs:
+    provider: 'azurerm'
+    command: 'destroy'
+    commandOptions: '-lock=false'
+    environmentServiceNameAzureRM: 'Free Trial(baa3252d-06b9-4e1b-a961-2ebe0501976c)'
