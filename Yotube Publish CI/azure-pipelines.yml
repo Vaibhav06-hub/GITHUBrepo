@@ -1,0 +1,38 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  name: default
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: |
+    echo Add other tasks to build, test, and deploy your project.
+    echo See https://aka.ms/yaml
+  displayName: 'Run a multi-line script'
+
+
+- task: Npm@1
+  displayName: init
+  inputs:
+    command: 'install'
+
+- task: Npm@1
+  displayName: build
+  inputs:
+    command: 'custom'
+    customCommand: 'run build'
+
+- task: Npm@1
+  displayName: publish
+  inputs:
+    command: 'publish'
+    publishRegistry: 'useFeed'
+    publishFeed: '723ff2ff-5540-4496-98ad-8b87a381ef79/57a11ad0-432d-4332-8982-07115135e0de'
